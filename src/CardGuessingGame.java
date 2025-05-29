@@ -1,118 +1,112 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
+import java.awt.event.*;
 import java.util.*;
 
-public class CardGuessingGame {
+public class CardGuessingGame extends JFrame {
+    JLabel label1;
+    JLabel label2;
+    JLabel label3;
+    JButton b1;
+    JButton b2;
 
+    ArrayList<Integer> cards = new ArrayList<Integer>();
+    int a = 0;
+    int b = 0;
+    int c = 0;
 
-    public static class CardGuessingGames extends JFrame {
-        private JLabel cardLabel, resultLabel, scoreLabel;
-        private JButton higherButton, lowerButton, newGameButton;
+    public CardGuessingGame() {
+        this.setTitle("Card Game");
+        this.setSize(400, 400);
+        this.setLayout(null);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        private List<Integer> deck;
-        private int currentCard;
-        private int score;
+        label1 = new JLabel("Card: ?");
+        label1.setBounds(150, 20, 200, 30);
+        this.add(label1);
 
-        public CardGuessingGames() {
-            setTitle("Card Guessing Game");
-            setSize(400, 300);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setLocationRelativeTo(null);
-            setLayout(new BorderLayout());
+        label2 = new JLabel("Guess higher or lower.");
+        label2.setBounds(100, 50, 300, 30);
+        this.add(label2);
 
-            // UI Panels
-            JPanel topPanel = new JPanel();
-            JPanel centerPanel = new JPanel();
-            JPanel bottomPanel = new JPanel();
+        label3 = new JLabel("Score: 0");
+        label3.setBounds(150, 80, 200, 30);
+        this.add(label3);
 
-            // Card display
-            cardLabel = new JLabel("Card: ?");
-            cardLabel.setFont(new Font("Arial", Font.BOLD, 24));
-            topPanel.add(cardLabel);
+        b1 = new JButton("Higher");
+        b1.setBounds(80, 120, 100, 30);
+        this.add(b1);
 
-            // Result & Score
-            resultLabel = new JLabel("Guess if the next card is Higher or Lower.");
-            scoreLabel = new JLabel("Score: 0");
-            centerPanel.setLayout(new GridLayout(2, 1));
-            centerPanel.add(resultLabel);
-            centerPanel.add(scoreLabel);
+        b2 = new JButton("Lower");
+        b2.setBounds(200, 120, 100, 30);
+        this.add(b2);
 
-            // Buttons
-            higherButton = new JButton("Higher");
-            lowerButton = new JButton("Lower");
-            newGameButton = new JButton("New Game");
-
-            bottomPanel.add(higherButton);
-            bottomPanel.add(lowerButton);
-            bottomPanel.add(newGameButton);
-
-            // Add panels to frame
-            add(topPanel, BorderLayout.NORTH);
-            add(centerPanel, BorderLayout.CENTER);
-            add(bottomPanel, BorderLayout.SOUTH);
-
-            // Button Listeners
-            higherButton.addActionListener(e -> guess(true));
-            lowerButton.addActionListener(e -> guess(false));
-            newGameButton.addActionListener(e -> startNewGame());
-
-            startNewGame();
+        for (int i = 0; i < 13; i++) {
+            cards.add(i + 1);
         }
+        Collections.shuffle(cards);
 
-        private void startNewGame() {
-            deck = new ArrayList<>();
-            for (int i = 1; i <= 13; i++) {
-                // Only use numbers for simplicity (1 to 13)
-                deck.add(i);
+        a = cards.get(0);
+        cards.remove(0);
+        label1.setText("Card: " + a);
+
+        b1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (cards.size() == 0) {
+                    for (int i = 1; i <= 13; i++) {
+                        cards.add(i);
+                    }
+                    Collections.shuffle(cards);
+                }
+
+                b = cards.get(0);
+                cards.remove(0);
+
+                if (b > a) {
+                    c = c + 1;
+                    label2.setText("Correct! Card was: " + b);
+                    label3.setText("Score: " + c);
+                    a = b;
+                    label1.setText("Card: " + a);
+                } else {
+                    label2.setText("Wrong! Card was: " + b);
+                    b1.setEnabled(false);
+                    b2.setEnabled(false);
+                    label1.setText("Card: " + a);
+                }
             }
-            Collections.shuffle(deck);
-            currentCard = drawCard();
-            score = 0;
-            updateUI("Game started! Make your guess.");
-            enableButtons(true);
-        }
+        });
 
-        private int drawCard() {
-            if (deck.isEmpty()) {
-                // Reshuffle if out of cards
-                for (int i = 1; i <= 13; i++) deck.add(i);
-                Collections.shuffle(deck);
+        b2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (cards.size() == 0) {
+                    for (int i = 1; i <= 13; i++) {
+                        cards.add(i);
+                    }
+                    Collections.shuffle(cards);
+                }
+
+                b = cards.get(0);
+                cards.remove(0);
+
+                if (b < a) {
+                    c = c + 1;
+                    label2.setText("Correct! Card was: " + b);
+                    label3.setText("Score: " + c);
+                    a = b;
+                    label1.setText("Card: " + a);
+                } else {
+                    label2.setText("Wrong! Card was: " + b);
+                    b1.setEnabled(false);
+                    b2.setEnabled(false);
+                    label1.setText("Card: " + a);
+                }
             }
-            return deck.remove(0);
-        }
-
-        private void guess(boolean guessHigher) {
-            int nextCard = drawCard();
-            boolean correct = (guessHigher && nextCard > currentCard) || (!guessHigher && nextCard < currentCard);
-
-            if (correct) {
-                score++;
-                resultLabel.setText("Correct! Next card was: " + nextCard);
-                currentCard = nextCard;
-            } else {
-                resultLabel.setText("Wrong! Next card was: " + nextCard);
-                enableButtons(false);
-            }
-
-            cardLabel.setText("Card: " + currentCard);
-            scoreLabel.setText("Score: " + score);
-        }
-
-        private void updateUI(String message) {
-            cardLabel.setText("Card: " + currentCard);
-            resultLabel.setText(message);
-            scoreLabel.setText("Score: " + score);
-        }
-
-        private void enableButtons(boolean enable) {
-            higherButton.setEnabled(enable);
-            lowerButton.setEnabled(enable);
-        }
-
-        public static void main(String[] args) {
-            SwingUtilities.invokeLater(() -> new CardGuessingGames().setVisible(true));
-        }
+        });
     }
 
+    public static void main(String[] args) {
+        CardGuessingGame g = new CardGuessingGame();
+        g.setVisible(true);
+    }
 }
