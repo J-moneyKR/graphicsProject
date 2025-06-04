@@ -3,6 +3,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+/**
+ * A simple GUI-based card guessing game using Swing.
+ * <p>
+ * The user gets a card that is 1 through 13 and have to  guess
+ * whether the next card will be higher or lower. The game
+ * keeps score based on correct guesses. Once an incorrect
+ * guess is made, the game ends.
+ * </p>
+ * 
+ * @author Jack Fryer 
+ */
 
 public class CardGuessingGame extends JFrame {
     // Making the text and buttons that will appear in the swing interface thing 
